@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+
+  <meta property="og:title" content="GG84 Project Security Studio">
+  <meta property="og:description" content="Proteggi la tua privacy con lo strumento di cifratura GG84.">
+  <meta property="og:image" content="https://giagiu84.github.io/ProjectSecurityStudio/logo.png">
+  <meta property="og:url" content="https://giagiu84.github.io/ProjectSecurityStudio/">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <link rel="manifest" href="manifest.json">
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(reg => console.log('SW registered'))
+        .catch(err => console.error('SW failed', err));
+    }
+  </script>
+  <meta charset="UTF-8">
+  <title>GG84 Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      background-color: black;
+      overflow: hidden;
+      height: 100%;
+      width: 100%;
+    }
+    video {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      object-fit: cover;
+      z-index: 0;
+    }
+    #logo {
+      position: absolute;
+      top: 10%;
+      left: 50%;
+      transform: translateX(-50%);
+      max-width: 60%;
+      height: auto;
+      z-index: 1;
+    }
+  </style>
+</head>
+<body>
+  <img id="logo" src="logo.png" alt="GG84 Studio Logo">
+  <video id="introVideo" autoplay muted playsinline>
+    <source src="videointro.mp4" type="video/mp4">
+    Il tuo browser non supporta il video.
+  </video>
+
+  <audio id="cyberAudio" autoplay>
+    <source src="gg84.mp3" type="audio/mpeg">
+    Il tuo browser non supporta l'audio.
+  </audio>
+
+  <script>
+    const video = document.getElementById('introVideo');
+    video.onended = () => {
+      window.location.href = 'app.html';
+    };
+  </script>
+</body>
+</html>
