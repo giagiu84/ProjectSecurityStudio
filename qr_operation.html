@@ -1,0 +1,457 @@
+
+<!DOCTYPE html>
+
+<html lang="it">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GG84 QR Operation Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+    body {
+      background-color: #0e0e0e;
+      font-family: 'Share Tech Mono', monospace;
+      color: #ccff00;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #ff00aa;
+      font-size: 2em;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .slogan {
+      font-size: 1.1em;
+      text-align: center;
+      margin-bottom: 30px;
+      color: #fff;
+    }
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 40px;
+    }
+    .box {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+    }
+    textarea, input[type=password] {
+      width: 100%;
+      background: #111;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin: 10px 0;
+    }
+    button {
+      background-color: #ff00aa;
+      color: white;
+      font-weight: bold;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:disabled {
+      background-color: #444;
+      cursor: not-allowed;
+    }
+    button:hover:enabled {
+      background-color: #ccff00;
+      color: black;
+    }
+    #qrcode {
+      margin: 10px auto;
+    }
+    .scanner { max-width: 640px; margin: 30px auto; background: #111; border: 2px solid #ccff00;
+      margin-top: 30px;
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 10px;
+    }
+    video { border: 2px solid #ccff00; border-radius: 10px;
+      width: 100%;
+      max-width: 300px;
+      margin-top: 10px;
+    }
+  </style>
+<style>
+body {
+  background-color: #1e1e1e;
+  color: #e0e0e0;
+  font-family: Arial, sans-serif;
+}
+h3 {
+  color: #ccff00;
+}
+label {
+  color: #ccff00;
+  font-weight: bold;
+}
+input[type="password"], input[type="file"], textarea {
+  background-color: #2a2a2a;
+  color: #ffffff;
+  border: 1px solid #555;
+  border-radius: 5px;
+  padding: 6px;
+  margin-top: 5px;
+  width: 100%;
+  max-width: 400px;
+}
+button {
+  background-color: #ff00aa;
+  color: #ffffff;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+button:hover {
+  background-color: #ccff00;
+  color: #000000;
+}
+</style></head>
+<body>
+<img alt="GG84 Logo" src="logo_sticky.png" style="position:fixed; top:20px; left:20px; height:50px; z-index:1000;"/>
+<h1>🔐 GG84 - QR Operation Mode</h1>
+<p class="slogan">"Non affidarti solo alla sicurezza che ti garantiscono gli altri. Costruisci e gestisci la tua! Utilizza un QRCodeGG84JSS - nascondi un messaggio cifrato in un QRCode solo la tua password può decodificarlo!"</p>
+<div class="container">
+<div class="box">
+<textarea id="textToEncrypt" placeholder="Inserisci messaggio da cifrare..."></textarea>
+<input id="passwordEncrypt" oninput="toggleArrow()" placeholder="Password (min 8 caratteri)" type="password"/>
+<button disabled="" id="encryptBtn" onclick="encryptAndGenerateQR()">➡️ Genera QR</button>
+</div>
+<div class="box">
+<div id="qrcode"></div>
+<button onclick="downloadQR()">📥 Scarica QR</button>
+</div>
+</div>
+<div class="scanner">
+<h3 style="color:#ccff00;">📷 Scansiona QRCode_GG84PSS dopo che hai inserito la password del mittente e vedrai il messaggio in decriptato!</h3>
+<input id="passwordDecrypt" placeholder="Password per decifrare..." type="password"/>
+<div id="reader" style="width: 300px; margin: auto;"></div>
+<button onclick="startScan()">📷 Inquadra QR</button>
+<p id="decryptedOutput"></p>
+</div>
+<script src="gg84crypto.min.js"></script>
+<script>
+function cleanQRContent(data) {
+  return data.trim().replace(/\s+/g, '');
+}
+</script>
+<script>
+    function toggleArrow() {
+      const pass = document.getElementById("passwordEncrypt").value;
+      document.getElementById("encryptBtn").disabled = pass.length < 8;
+    }
+
+    function encryptAndGenerateQR() {
+      const text = document.getElementById("textToEncrypt").value;
+      const pass = document.getElementById("passwordEncrypt").value;
+      if (!text.trim()) {
+        alert("Inserisci un messaggio.");
+        return;
+      }
+      const signature = "@91GgMc48*";
+      const encrypted = gg84encrypt(text + signature, pass);
+      
+    console.log("Testo cifrato:", encrypted);
+    document.getElementById("qrcode").innerHTML = ""; document.getElementById("decryptedOutput").innerText = "✅ QR generato correttamente!";
+    
+      
+    const qrElement = document.getElementById("qrcode");
+    new QRCode(qrElement, {
+    
+        text: encrypted,
+        width: 256,
+        height: 256
+      });
+    }
+
+    function downloadQR() {
+      const qrCanvas = document.querySelector("#qrcode canvas");
+      if (!qrCanvas) {
+        alert("QR non ancora generato.");
+        return;
+      }
+      const link = document.createElement("a");
+      link.download = "GG84_QR.png";
+      link.href = qrCanvas.toDataURL("image/png");
+      
+    link.click();
+    console.log("QR scaricato.");
+    
+    }
+
+    function startScan() {
+      const pass = document.getElementById("passwordDecrypt").value;
+      if (pass.length < 8) {
+        alert("Inserisci una password valida prima della scansione.");
+        return;
+      }
+      const html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        qrCodeMessage => {
+          html5QrCode.stop();
+          try {
+            const decrypted = gg84decrypt(qrCodeMessage, pass);
+            if (!decrypted.includes("@91GgMc48*")) {
+              document.getElementById("decryptedOutput").innerText = "❌ QR compromesso o password errata!";
+              return;
+            }
+            const msg = decrypted.replace("@91GgMc48*", "");
+            document.getElementById("decryptedOutput").innerText = "✅ Messaggio: " + msg;
+          } catch (e) {
+            document.getElementById("decryptedOutput").innerText = "❌ Decifratura fallita!";
+          }
+        },
+        errorMsg => {}
+      );
+    }
+  </script>
+<div style="padding:20px;border-radius:12px;border:2px solid #ccff00;box-shadow:0 0 10px #888;max-width:640px;margin:30px auto;text-align:center;color:#000;background-color:#111;">
+<label for="imagePassword">🔐 Inserisci la password usata dal mittente:</label><input id="imagePassword" style="margin:10px;padding:5px;border-radius:5px;" type="password"/><h3 style="color: #ccff00; font-weight: bold; font-family: monospace;">📤 Decifra un QR Code da Immagine</h3>
+<p style="color:#ccff00;font-size:0.9em;">Carica un'immagine contenente un QR generato da GG84PSS. Inserisci la password usata dal mittente per decifrare il messaggio.</p>
+<input accept="image/*" id="qrImageUpload" type="file"/><br/><br/>
+<button disabled="true" onclick="decodeQRFromImage()">🧩 Decifra QR da Immagine</button><div id="decryptedImageOutput" style="
+            background-color: #ccff00;
+            color: #000;
+            font-weight: bold;
+            padding: 16px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            max-width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+            font-size: 1.1em;
+        ">📭 L'output del messaggio apparirà qui dopo la decifratura.</div>
+<p id="decryptedOutput" style="margin-top:20px;color:#00ff00;font-weight:bold;"></p>
+</div><script src="gg84_qrcrypto.js"></script>
+<script>
+document.getElementById("imagePassword").addEventListener("input", function () {
+  const pass = this.value;
+  const btn = document.querySelector("button[onclick='decodeQRFromImage()']");
+  btn.disabled = pass.length < 8;
+});
+</script><script>
+document.addEventListener("DOMContentLoaded", function () {
+  const input = document.getElementById("qrImageUpload");
+  if (input) {
+    input.addEventListener("change", function () {
+      if (this.files.length > 0) {
+        decodeQRFromImage();
+      }
+    });
+  }
+});
+</script><script>
+let loadedQRImage = null;
+
+document.getElementById("loadQRImageBtn").addEventListener("click", function () {
+  const input = document.getElementById("qrImageUpload");
+  if (!input.files.length) {
+    document.getElementById("fileConfirmMsg").innerText = "⚠️ Nessun file selezionato!";
+    return;
+  }
+  loadedQRImage = input.files[0];
+  document.getElementById("fileConfirmMsg").innerText = "✅ Immagine caricata correttamente!";
+});
+
+function decodeQRFromImage() {
+  const pass = document.getElementById("imagePassword").value;
+  if (!loadedQRImage) {
+    alert("⚠️ Nessuna immagine caricata.");
+    return;
+  }
+  if (pass.length < 8) {
+    alert("⚠️ Inserisci una password valida (almeno 8 caratteri).");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = function (e) {
+    const img = new Image();
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, canvas.width, canvas.height);
+      if (code) {
+        try {
+          const decrypted = gg84decrypt(code.data, pass);
+          if (!decrypted.includes("@91GgMc48*")) {
+            document.getElementById("decryptedImageOutput").innerText = "❌ QR compromesso o password errata!";
+            return;
+          }
+          const msg = decrypted.replace("@91GgMc48*", "");
+          document.getElementById("decryptedImageOutput").innerText = "✅ Messaggio: " + msg;
+        } catch (e) {
+          document.getElementById("decryptedImageOutput").innerText = "❌ Decifratura fallita!";
+        }
+      } else {
+        document.getElementById("decryptedImageOutput").innerText = "❌ QR non riconosciuto!";
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(loadedQRImage);
+}
+</script>
+
+<script>
+document.getElementById("imagePassword").addEventListener("input", function () {
+  const pass = this.value;
+  const btn = document.querySelector("button[onclick='decodeQRFromImage()']");
+  btn.disabled = pass.length < 8;
+});
+
+function decodeQRFromImage() {
+  const fileInput = document.getElementById("qrImageUpload");
+  const pass = document.getElementById("imagePassword").value;
+  const output = document.getElementById("decryptedImageOutput");
+
+  if (!fileInput.files.length) {
+    alert("⚠️ Nessuna immagine caricata.");
+    return;
+  }
+
+  if (pass.length < 8) {
+    alert("⚠️ Inserisci una password valida (almeno 8 caratteri).");
+    return;
+  }
+
+  const file = fileInput.files[0];
+  const reader = new FileReader();
+  reader.onload = function() {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const code = jsQR(imageData.data, canvas.width, canvas.height);
+      if (code) {
+        try {
+          gg84decrypt(code.data, pass).then(decrypted => {
+            if (!decrypted.includes("@91GgMc48*")) {
+              output.innerText = "❌ QR compromesso o password errata!";
+            } else {
+              const msg = decrypted.replace("@91GgMc48*", "");
+              output.innerText = "✅ Messaggio: " + msg;
+            }
+          });
+        } catch (e) {
+          output.innerText = "❌ Decifratura fallita!";
+        }
+      } else {
+        output.innerText = "❌ QR non rilevato nell'immagine.";
+      }
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+}
+</script>
+
+<!-- INIZIO BLOCCO VISIVO DECIFRATURA -->
+<div class="section" style="background:#1f1f1f;border:3px solid #ccff00;border-radius:12px;padding:20px;margin:auto;max-width:700px;margin-top:40px;">
+  <div class="password-box" style="margin-bottom:20px;">
+    <label for="qrPassword">🔐 Inserisci la password del QR:</label><br>
+    <input type="password" id="qrPassword" placeholder="Minimo 8 caratteri" disabled>
+    <button id="decryptBtn" disabled style="margin-left:10px;padding:8px 16px;border:none;border-radius:6px;background:#ff00aa;color:#fff;font-weight:bold;">Decifra</button>
+  </div>
+  <div style="display:flex;justify-content:space-between;gap:20px;">
+    <div class="box" id="leftBox" onclick="document.getElementById('qrFile').click()" style="flex:1;border:2px dashed #888;border-radius:12px;padding:20px;min-height:250px;background:#111;">
+      <p id="qrPrompt" style="font-size:2em;color:#ff00aa;cursor:pointer;">+</p>
+      <input type="file" id="qrFile" accept="image/png" style="display:none"/>
+      <img id="qrPreview" style="display:none;max-width:100%;max-height:200px"/>
+    </div>
+    <div class="box" id="rightBox" style="flex:1;border:2px dashed #888;border-radius:12px;padding:20px;min-height:250px;background:#111;">
+      <div id="outputText" style="white-space:pre-wrap;color:#fff;">📄 Testo decifrato</div>
+    </div>
+  </div>
+</div>
+<script>
+function cleanQRContent(data) {
+  return data.trim().replace(/\s+/g, '');
+}
+async function gg84decrypt(encryptedBase64, password) {
+  const signature = "@91GgMc48*";
+  const enc = new TextEncoder();
+  const data = Uint8Array.from(atob(encryptedBase64), c => c.charCodeAt(0));
+  const salt = data.slice(0, 16);
+  const iv = data.slice(16, 28);
+  const encrypted = data.slice(28);
+  const keyMaterial = await window.crypto.subtle.importKey("raw", enc.encode(password), { name: "PBKDF2" }, false, ["deriveBits", "deriveKey"]);
+  const key = await window.crypto.subtle.deriveKey({ name: "PBKDF2", salt: salt, iterations: 100000, hash: "SHA-256" }, keyMaterial, { name: "AES-GCM", length: 256 }, false, ["decrypt"]);
+  const decrypted = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv: iv }, key, encrypted);
+  const decoded = new TextDecoder().decode(decrypted);
+  if (!decoded.includes(signature)) throw new Error("Firma assente");
+  return decoded.replace(signature, "");
+}
+let scannedContent = "";
+document.getElementById('qrFile').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(event) {
+    const img = new Image();
+    img.onload = function() {
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const decoded = jsQR(imageData.data, imageData.width, imageData.height);
+      if (decoded) {
+        scannedContent = cleanQRContent(decoded.data);
+        document.getElementById("qrPreview").src = img.src;
+        document.getElementById("qrPreview").style.display = "block";
+        document.getElementById("qrPrompt").style.display = "none";
+        document.getElementById("qrPassword").disabled = false;
+        document.getElementById("decryptBtn").disabled = false;
+      }
+    };
+    img.src = event.target.result;
+  };
+  reader.readAsDataURL(file);
+});
+document.getElementById("decryptBtn").addEventListener("click", function() {
+  const pwd = document.getElementById("qrPassword").value;
+  if (pwd.length >= 8 && scannedContent) {
+    gg84decrypt(scannedContent, pwd).then(text => {
+      document.getElementById("outputText").innerText = text;
+      document.getElementById("rightBox").style.border = "2px solid #ccff00";
+      document.getElementById("rightBox").style.background = "#222";
+    }).catch(() => {
+      document.getElementById("outputText").innerText = "❌ Password errata o QR compromesso.";
+      document.getElementById("rightBox").style.border = "2px dashed #888";
+      document.getElementById("rightBox").style.background = "#111";
+    });
+  }
+});
+</script>
+<!-- FINE BLOCCO VISIVO -->
+
+</body>
+</html>

@@ -1,0 +1,38 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GG84 - Cifra/Decifra Documenti</title>
+  <style>
+    body { background-color: #000; color: #ccff00; font-family: 'Courier New', monospace; text-align: center; padding: 20px; }
+    h1 { color: #ff00aa; }
+    input, button, select { margin: 10px; padding: 10px; font-size: 1rem; border-radius: 8px; border: none; }
+    input[type="file"] { background: #111; color: #fff; }
+    input[type="password"], input[type="text"], select { width: 300px; }
+    button { background-color: #ccff00; color: #000; font-weight: bold; cursor: pointer; }
+    button:hover { background-color: #ff00aa; color: #fff; }
+    #message { margin-top: 20px; font-size: 1rem; color: #ff00aa; }
+    .notice { color: #ff8800; font-size: 0.9rem; margin-top: 30px; }
+  </style>
+</head>
+<body>
+  <h1>GG84 - Cifra o Decifra il tuo Documento</h1>
+  <label for="modeSelect">Cosa vuoi fare?</label><br/>
+  <select id="modeSelect">
+    <option value="encrypt">Cifrare un documento</option>
+    <option value="decrypt">Decifrare un documento .gg84</option>
+  </select><br/>
+  <input type="file" id="fileInput" /><br/>
+  <input type="password" id="passwordInput" placeholder="Password" />
+  <button onclick="togglePassword()">👁️</button><br/>
+  <button onclick="process()">Procedi</button>
+  <div id="message"></div>
+  <div class="notice">
+    ⚠️ Funziona solo su Android e browser compatibili (es. Chrome).<br/>
+    Su iPhone è necessario salvare manualmente il file.
+  </div>
+  <script src="gg84crypto.min.js"></script>
+</body>
+</html>

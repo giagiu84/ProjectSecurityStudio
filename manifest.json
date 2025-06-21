@@ -1,0 +1,21 @@
+{
+  "name": "GG84 Studio App",
+  "short_name": "GG84",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#A8FF04",
+  "description": "App di cifratura/decrittazione sicura by GG84 Studio",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
